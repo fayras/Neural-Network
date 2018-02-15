@@ -1,8 +1,52 @@
+import numpy
+import matplotlib.pyplot
+
 from NeuralNetwork import NeuralNetwork
 
-i = 3
-h = 2
-o = 2
+data_file = open('mnist/mnist_train.csv', 'r')
+train_set = data_file.readlines()
+data_file.close()
+
+data_file = open('mnist/mnist_test.csv', 'r')
+test_set = data_file.readlines()
+data_file.close()
+
+
+def get_data(data_set, index):
+    return numpy.asfarray(data_set[index].split(','))
+
+
+def plot_data(data):
+    image_array = data.reshape((28, 28))
+    matplotlib.pyplot.imshow(image_array, cmap='Greys', interpolation='None')
+    matplotlib.pyplot.show()
+    pass
+
+
+def scale_data(data):
+    return (data / 255.0 * 0.99) + 0.01
+
+
+def prepare_targets(nodes, digit):
+    targets = numpy.zeros(nodes) + 0.01
+    targets[int(digit)] = 0.99
+    return targets
+
+
+# plot_data(all_values[1:])
+
+i = 784
+h = 64
+o = 10
 lr = 0.1
 
 n = NeuralNetwork(i, h, o, lr)
+
+for index, entry in enumerate(train_set):
+    if index % 1000 == 0:
+        print(index)
+    all_values = numpy.asfarray(entry.split(','))
+    inputs = scale_data(all_values[1:])
+    targets = prepare_targets(o, all_values[0])
+    n.train(inputs, targets)
+    pass
