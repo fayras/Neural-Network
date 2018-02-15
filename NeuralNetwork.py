@@ -51,6 +51,11 @@ class NeuralNetwork:
 
         return final_outputs
 
+    def set_learning_rate(self, lr):
+        self.lr = lr
+
+        pass
+
     @staticmethod
     def random_weights(rows, cols):
         # Liefert komplett zufällige Gewichte zurück.

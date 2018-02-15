@@ -40,13 +40,37 @@ h = 64
 o = 10
 lr = 0.1
 
+epochs = 3
+
 n = NeuralNetwork(i, h, o, lr)
 
-for index, entry in enumerate(train_set):
-    if index % 1000 == 0:
-        print(index)
+for e in range(epochs):
+    for index, entry in enumerate(train_set):
+        if index % 5000 == 0:
+            print(e, index)
+        all_values = numpy.asfarray(entry.split(','))
+        inputs = scale_data(all_values[1:])
+        targets = prepare_targets(o, all_values[0])
+        n.train(inputs, targets)
+        pass
+    n.set_learning_rate(n.lr / 2.0)
+    pass
+
+
+predictions = []
+
+for entry in test_set:
     all_values = numpy.asfarray(entry.split(','))
     inputs = scale_data(all_values[1:])
-    targets = prepare_targets(o, all_values[0])
-    n.train(inputs, targets)
+    outputs = n.query(inputs)
+    correct_label = int(all_values[0])
+    prediction = numpy.argmax(outputs)
+    if prediction == correct_label:
+        predictions.append(1)
+    else:
+        predictions.append(0)
+        pass
     pass
+
+predictions = numpy.asarray(predictions)
+print('performance: ', predictions.sum() / predictions.size)
